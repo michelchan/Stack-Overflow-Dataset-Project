@@ -68,8 +68,23 @@ function makeGraph(){
 			return y(d);
 		})
 		.attr("width", width/numAttr - padding)
-		.attr("fill","green")
+		.attr("fill","green");
 
+	var trying = []
+	for (i in counts){
+		var dict = {};
+		dict[i] = counts[i];
+		trying.push(dict);
+	}
+	console.log(trying);
+
+	barGraph.selectAll("rect")
+		.data(trying)
+		.append("svg:title")
+		.text(function(d,i){
+			var dKey = Object.keys(d)[0];
+			return dKey != "" ? dKey + ": " + d[dKey] : "Didn't Answer" + ": " + d[dKey];
+		});
 
 	// barGraph.selectAll("rect")
 	// 	.data(countsValue)
@@ -137,6 +152,7 @@ function makeGraph(){
 function hoverOver(){
 	d3.select(this)
 		.style({opacity:'0.8'});
+	$('.tooltipped').tooltip({delay: 50});
 }
 
 function hoverOut(){
