@@ -6,7 +6,7 @@ div.bar {
 	margin-right:2px;
 }
 
-div.tooltip {   
+/*div.tooltip {   
   position: absolute;           
   text-align: center;           
   width: 60px;                  
@@ -17,4 +17,14 @@ div.tooltip {
   border: 0px;      
   border-radius: 8px;           
   pointer-events: none;         
+}*/
+
+.tooltip-block:hover:after{
+	border: 1px solid #fc0;
+	padding: 3px 6px;
+	background: #fffea1;
+	content: attr(data-title);
+	position: absolute;
+	right: -40px;
+	top: -26px;
 }
