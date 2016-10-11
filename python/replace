@@ -1,0 +1,7 @@
+from mapping import choices
+
+with open('../data/stackoverflow.csv') as infile, open('../data/reduceddata.csv', 'w') as outfile:
+    for line in infile:
+        for src, target in choices.iteritems():
+            line = line.replace(src, target)
+        outfile.write(line)
