@@ -11,24 +11,35 @@
 	<script type="text/javascript" src="js/materialize.min.js"></script>
 	<script type="text/javascript" src="js/underscore.js"></script>
 	<script type="text/javascript" src="js/d3.v3.js"></script> 
-	<script type="text/javascript" src="js/bargraph.js"></script>
-	<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+
 </head>
 <body>
-	<div>
-		<div class="input-field col s12">
-			<select id="bargraphSelect">
-				<option value="0" disabled selected>Variables</option>
-				<option value="1">Job Satisfaction</option>
-				<option value="2">Commit Frequency</option>
-			</select>
-			<label>Variable Select</label>
+	<div class="container">
+		<div id="loading">
+			<h1>Loading data...</h1>
 		</div>
+		<div id="body" style="display:none;">
+			<div class="row">
+				<div class="input-field col s4">
+					<select id="bargraphSelect">
+						<option value="0" disabled selected>Variables</option>
+					</select>
+					<label>Variable Select</label>
+				</div>
+				<div class="input-field col s8">
+					<label id="bargraphLabel">Text</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s1"></div>
+				<div id="barGraph" class="input-field col s10">
 
-		<div id="barGraph">
-			<label id="bargraphLabel">Text</label>
+				</div>
+				<div class="input-field col s1"></div>
+			</div>
 		</div>
-
 	</div>
+	<script type="text/javascript" src="js/attributesMapping.js"></script>
+	<script type="text/javascript" src="js/bargraph.js"></script>
 </body>
 </html>
