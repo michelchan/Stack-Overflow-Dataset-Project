@@ -171,18 +171,25 @@ function loadSelect(){
 	$('#bargraphSelect').trigger('change');
 }
 
+function editString(string){
+	string = string.replace("_"," ");
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 $(document).ready(function() {
 	$('select').not('.disabled').material_select();
 
 	$('#bargraphSelect').on('change', function(e) {
 		$(this).material_select();
-		$("#bargraphLabel").text(attributes[$("#bargraphSelect").val()])
+		var string = editString(attributes[$("#bargraphSelect").val()]);
+		$("#bargraphLabel").text(string)
 		counter = $("#bargraphSelect").val();
 		initBarGraph(counter);
 	});
 	$('#barGraph').click(function() {
 		counter++;
-		$("#bargraphLabel").text(attributes[$("#bargraphSelect").val()])
+		var string = editString(attributes[$("#bargraphSelect").val()]);
+		$("#bargraphLabel").text(string)
 		$('#barGraphSelect').val(counter);
 		$('#barGraphSelect').material_select();
 		initBarGraph(counter);
