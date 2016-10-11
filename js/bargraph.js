@@ -1,8 +1,9 @@
 var data;
 var counts = {};
 var width = $(window).width()* .7;
-var height = $(window).height();
+var height = $(window).height() * .5;
 var padding = 5;
+var counter = 1;
 
 d3.json("./data/data.json", function(error, json){
 	if (error) return console.warn(error);
@@ -12,10 +13,10 @@ d3.json("./data/data.json", function(error, json){
 	data = json;
 });
 
-function initBarGraph(variable){
+function initBarGraph(){
 	removeBars();
-	if (variable)
-		bucketData(attributes[variable]);
+	if (counter)
+		bucketData(attributes[counter]);
 	makeGraph();
 }
 
@@ -42,7 +43,7 @@ function makeGraph(){
 	// var y = d3.scaleLinear()
 	// 		.domain([arrayMin,arrayMax]);
 	var y = d3.scale.linear()
-		.domain([arrayMin, arrayMax])
+		.domain([arrayMin, arrayMax]);
 
 	for (var i = 0; i<array.length; i++){
 		adjusted[i] = x(array[i]);
@@ -53,7 +54,7 @@ function makeGraph(){
 		.attr("width", width)
 		.attr("height", height);
 
-	barGraph.selectAll("rect")
+	var rect = barGraph.selectAll("rect")
 		.data(adjusted)
 		.enter()
 		.append("svg:rect")
@@ -69,6 +70,7 @@ function makeGraph(){
 		.attr("width", width/numAttr - padding)
 		.attr("fill","green")
 
+
 	// barGraph.selectAll("rect")
 	// 	.data(countsValue)
 	// 	.enter()
@@ -78,13 +80,8 @@ function makeGraph(){
 	// 	});
 
 	barGraph.selectAll("rect")
-		.on("mouseover", function(d){
-			d3.select(this)
-				.style({opacity:'0.8'});
-		})
-		.on("mouseout", function(d){
-			var outBar = d3.select(this).style({opacity:'1.0'});
-		});
+		.on("mouseover", hoverOver)
+		.on("mouseout", hoverOut);
 
 	// barGraph.selectAll("text")
 	// 	.append("svg:text")
@@ -135,24 +132,16 @@ function makeGraph(){
 	// 		var outBar = d3.select(this).style({opacity:'1.0'});
 	// 		outBar.select("text").style({opacity:'0'});
 	// 	});
+}
 
-	// svg.selectAll("text")
-	// 	.data(countsValue)
-	// 	.enter()
-	// 	.append("text")
-	// 	.text(function(d) {
-	// 		return d;
-	// 	})
-	// 	.attr("x", function(d, i) {
-	// 		return i * (width / numAttr)-100;
-	// 	})
-	// 	.attr("y", function(d){
-	// 		return height - d;
-	// 	})
-	// 	.attr("font-family", "sans-serif")
-	// 	.attr("font-size", (width/numAttr)/4 + "px")
-	// 	.attr("fill", "purple")
-	// 	.attr("text-anchor", "middle");
+function hoverOver(){
+	d3.select(this)
+		.style({opacity:'0.8'});
+}
+
+function hoverOut(){
+	d3.selectAll("rect")
+		.style({opacity:'1.0'})
 }
 
 function putValuesInArray(){
@@ -179,19 +168,23 @@ function loadSelect(){
 		selectHTML += "<option value="+ i +">" + attributes[i] +"</option>\n";
 	}
 	$('#bargraphSelect').append(selectHTML);
-
-	$('#bargraphSelect').trigger('contentChanged');
-
+	$('#bargraphSelect').trigger('change');
 }
 
 $(document).ready(function() {
 	$('select').not('.disabled').material_select();
-	$('#bargraphSelect').on('contentChanged', function() {
-	  	// re-initialize (update)
-		$(this).material_select();
-	});
+
 	$('#bargraphSelect').on('change', function(e) {
-		$("#bargraphLabel").text($("#bargraphSelect").val())
-		initBarGraph($("#bargraphSelect").val());
+		$(this).material_select();
+		$("#bargraphLabel").text(attributes[$("#bargraphSelect").val()])
+		counter = $("#bargraphSelect").val();
+		initBarGraph(counter);
+	});
+	$('#barGraph').click(function() {
+		counter++;
+		$("#bargraphLabel").text(attributes[$("#bargraphSelect").val()])
+		$('#barGraphSelect').val(counter);
+		$('#barGraphSelect').material_select();
+		initBarGraph(counter);
 	});
 });
