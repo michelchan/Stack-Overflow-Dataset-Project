@@ -1,6 +1,6 @@
 var data;
 var counts = {};
-var width = $(window).width();
+var width = $(window).width()* .7;
 var height = $(window).height();
 var padding = 5;
 
@@ -27,14 +27,44 @@ function bucketData(string){
 function makeGraph(){
 	var numAttr = Object.keys(counts).length;
 	var countsValue = putValuesInArray();
+	var adjusted = [];
+
+	var arrayMin = Math.floor(d3.min(array));
+	var arrayMax = Math.floor(d3.max(array));
+
+	var scale = d3.scale.linear()
+					.domain([arrayMin,arrayMax])
+					.range([0,100]);
+
+	for (var i = 0; i<array.length; i++){
+		adjusted[i] = scale(array[i]);
+	}
 
 	var svg = d3.select("#barGraph")
 		.append("svg")
 		.attr("width", width)
 		.attr("height", height);
 
-	svg.selectAll("rect")
+	svg.selectAll("text")
 		.data(countsValue)
+		.enter()
+		.append("text")
+		.text(function(d) {
+			return d;
+		})
+		.attr("x", function(d, i) {
+			return i * (width / numAttr)-100;
+		})
+		.attr("y", function(d){
+			return height - d;
+		})
+		.attr("font-family", "sans-serif")
+		.attr("font-size", (width/numAttr)/4 + "px")
+		.attr("fill", "purple")
+		.attr("text-anchor", "middle");
+
+	svg.selectAll("rect")
+		.data(adjusted)
 		.enter()
 		.append("rect")
 		.attr("x", function(d,i){
@@ -58,24 +88,6 @@ function makeGraph(){
 			var outBar = d3.select(this).style({opacity:'1.0'});
 			outBar.select("text").style({opacity:'0'});
 		});
-
-	svg.selectAll("text")
-		.data(countsValue)
-		.enter()
-		.append("text")
-		.text(function(d) {
-			return d;
-		})
-		.attr("x", function(d, i) {
-			return i * (width / numAttr) + 50;
-		})
-		.attr("y", function(d){
-			return height - d;
-		})
-		.attr("font-family", "sans-serif")
-		.attr("font-size", (width/numAttr)/5 + "px")
-		.attr("fill", "purple")
-		.attr("text-anchor", "middle");
 }
 
 function putValuesInArray(){
@@ -83,7 +95,7 @@ function putValuesInArray(){
 	for (var c in counts){
 		array.push(counts[c]);
 	}
-	console.log(array);
+
 	return array;
 }
 
