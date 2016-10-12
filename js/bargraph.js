@@ -33,17 +33,13 @@ function makeGraph(){
 	var arrayMin = Math.ceil(d3.min(array));
 	var arrayMax = Math.ceil(d3.max(array));
 
-	// var x = d3.scaleLinear()
-	// 		.domain([0, countsValue.length])
-	// 		.range([0,width]);
 	var x = d3.scale.linear()
 		.domain([0, countsValue.length])
 		.range([0,width]);
 
-	// var y = d3.scaleLinear()
-	// 		.domain([arrayMin,arrayMax]);
 	var y = d3.scale.linear()
 		.domain([arrayMin, arrayMax]);
+
 
 	for (var i = 0; i<array.length; i++){
 		adjusted[i] = x(array[i]);
@@ -53,6 +49,8 @@ function makeGraph(){
 		.append("svg:svg")
 		.attr("width", width)
 		.attr("height", height);
+
+	var colors = d3.scale.category20()
 
 	var rect = barGraph.selectAll("rect")
 		.data(adjusted)
@@ -68,7 +66,7 @@ function makeGraph(){
 			return y(d);
 		})
 		.attr("width", width/numAttr - padding)
-		.attr("fill","green");
+		.attr("fill",function(d,i){return colors(i)})
 
 	var trying = []
 	for (i in counts){
@@ -85,78 +83,32 @@ function makeGraph(){
 			var dKey = Object.keys(d)[0];
 			return dKey != "" ? dKey + ": " + d[dKey] : "Didn't Answer" + ": " + d[dKey];
 		});
-
-	// barGraph.selectAll("rect")
-	// 	.data(countsValue)
-	// 	.enter()
-	// 	.append("svg.title")
-	// 	.text(function(d){
-	// 		return d;
-	// 	});
-
+		
 	barGraph.selectAll("rect")
 		.on("mouseover", hoverOver)
 		.on("mouseout", hoverOut);
-
-	// barGraph.selectAll("text")
-	// 	.append("svg:text")
-
-	// barGraph.selectAll("text.yAxis")
-	// 	.data(countsValue)
-	// 	.enter()
-	// 	.append("svg:text")
-	// 	.attr("x", function(d,i){
-	// 		return x(i)+(width/numAttr - padding)
-	// 	})
-	// 	.attr("y", height)
-	// 	.attr("dx", -(width/numAttr - padding)/2)
-	// 	.attr("text-anchor", "middle")
-	// 	.attr("style", "font-family: Helvetica, sans-serif")
-	// 	.text(function(d){
-	// 		return d;
-	// 	})
-	// 	.attr("class","yAxis");
-
-	// var svg = d3.select("#barGraph")
-	// 	.append("svg")
-	// 	.attr("width", width)
-	// 	.attr("height", height);
-
-	// svg.selectAll("rect")
-	// 	.data(adjusted)
-	// 	.enter()
-	// 	.append("rect")
-	// 	.attr("x", function(d,i){
-	// 		return i * (width/numAttr);
-	// 	})
-	// 	.attr("y", function(d){
-	// 		return height - d;
-	// 	})
-	// 	.attr("width", width/numAttr - padding)
-	// 	.attr("height", function(d){
-	// 		return d;
-	// 	})
-	// 	.attr("fill", function(d){
-	// 		return "rgb("+ d +", 233 , 30)";
-	// 	})
-	// 	.on("mouseover", function(d){
-	// 		var hoveredBar = d3.select(this).style({opacity:'0.8'});
-	// 		hoveredBar.select("text").style({opacity:'1.0'});
-	// 	})
-	// 	.on("mouseout", function(d){
-	// 		var outBar = d3.select(this).style({opacity:'1.0'});
-	// 		outBar.select("text").style({opacity:'0'});
-	// 	});
 }
 
 function hoverOver(){
+	var transform = d3.svg.transform()
+	    .scale(function(d) { return d * 2 });
+
 	d3.select(this)
-		.style({opacity:'0.8'});
+		.style({opacity:'0.8'})
+		.transition()
+		.duration(1000)
+		.attr("transform",transform);
 }
 
 function hoverOut(){
-	d3.selectAll("rect")
+	var value = $(this).children('title').val();
+	// value = x(value);
+
+	d3.select(this)
 		.style({opacity:'1.0'})
+		.transition()
+		.duration(1000)
+		.attr("transform", "scale(1)");
 }
 
 function putValuesInArray(){
