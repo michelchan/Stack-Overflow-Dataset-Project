@@ -1,7 +1,7 @@
 var data;
 var counts = {};
 var width = $(window).width()* .7;
-var height = $(window).height() * .5;
+var height = $(window).height() * .8;
 var padding = 5;
 var counter = 1;
 
@@ -30,8 +30,8 @@ function makeGraph(){
 	var countsValue = putValuesInArray();
 	var adjusted = [];
 
-	var arrayMin = Math.floor(d3.min(array));
-	var arrayMax = Math.floor(d3.max(array));
+	var arrayMin = Math.ceil(d3.min(array));
+	var arrayMax = Math.ceil(d3.max(array));
 
 	// var x = d3.scaleLinear()
 	// 		.domain([0, countsValue.length])
@@ -152,7 +152,6 @@ function makeGraph(){
 function hoverOver(){
 	d3.select(this)
 		.style({opacity:'0.8'});
-	$('.tooltipped').tooltip({delay: 50});
 }
 
 function hoverOut(){
