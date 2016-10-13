@@ -1,6 +1,6 @@
 var attributes = {
 	1: "collector",
-	2: "country",
+	2: "job_search_annoyance",
 	3: "age_range",
 	4: "gender",
 	5: "occupation",
