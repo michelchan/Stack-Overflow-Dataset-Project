@@ -59,11 +59,8 @@ function makeGraph(){
 		.attr("x", function(d,i){
 			return x(i)
 		})
-		// .attr("y", function(d){
-		// 	return height - y(d);
-		// })
 		.attr("y", function(d){
-			return 0;
+			return height - y(d);
 		})
 		.attr("height", function(d) {
 			console.log(d);
@@ -102,12 +99,9 @@ function hoverOver(){
 		.duration(5000)
 
 		var selection = d3.select(this);
-		var offsetX = parseFloat(selection.attr("x"))+
-		parseFloat(selection.attr("width")/2.0);
-		var offsetY = parseFloat(selection.attr("y"))+
-		parseFloat(selection.attr("height")/2.0);
-		d3.select(this)
-			.style({opacity:'1'})
+		var offsetX = parseFloat(selection.attr("x")) + parseFloat(selection.attr("width")/2.0);
+		var offsetY = parseFloat(selection.attr("y")) + parseFloat(selection.attr("height")/2.0);
+		selection.style({opacity:'1'})
 			.transition()
 			.duration(500)
 			.style("fill",function(d){
