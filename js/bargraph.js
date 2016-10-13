@@ -11,6 +11,7 @@ d3.json("./data/data.json", function(error, json){
 	$("#loading").hide();
 	loadSelect();
 	data = json;
+	initBarGraph();
 });
 
 function initBarGraph(){
@@ -22,7 +23,6 @@ function initBarGraph(){
 
 function bucketData(string){
 	counts = _.countBy(data, string);
-	console.log(counts);
 }
 
 function makeGraph(){
@@ -63,7 +63,6 @@ function makeGraph(){
 			return height - y(d);
 		})
 		.attr("height", function(d) {
-			console.log(d);
 			return y(d);
 		})
 		.attr("width", width/numAttr - padding)
@@ -77,7 +76,6 @@ function makeGraph(){
 		dict[i] = counts[i];
 		trying.push(dict);
 	}
-	console.log(trying);
 
 	barGraph.selectAll("rect")
 		.data(trying)
@@ -94,7 +92,7 @@ function makeGraph(){
 
 function hoverOver(){
 	d3.selectAll('rect')
-		.style({opacity:'0.8'})
+		.style({opacity:'0.3'})
 		.transition()
 		.duration(5000)
 
@@ -119,18 +117,18 @@ function hoverOver(){
 function hoverOut(){
 	var value = $(this).children('title').val();
 	// value = x(value);
-	var colors = d3.scale.category20()
+	var colors = d3.scale.category20();
+
+	d3.selectAll('rect')
+		.style({opacity:'1'});
 
 	d3.select(this)
-		.style({opacity:'1.0'})
 		.transition()
-		.duration(1000)
+		.duration(500)
 		.attr("transform", "scale(1)")
 		.style("fill",function(d,i){
-				// var color = d3.rgb($(this).attr("fill"))
-				// return color.brighter(1);
-				return colors[i];
-			});
+			return colors[i];
+		});
 }
 
 function putValuesInArray(){
@@ -161,7 +159,7 @@ function loadSelect(){
 }
 
 function editString(string){
-	string = string.replace("_"," ");
+	string = string.replace(/_/g," ");
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -177,9 +175,9 @@ $(document).ready(function() {
 	});
 	$('#barGraph').click(function() {
 		counter++;
-		var string = editString(attributes[$("#bargraphSelect").val()]);
+		var string = editString(attributes[counter]);
 		$("#bargraphLabel").text(string)
-		$('#barGraphSelect').val(counter);
+		$('#barGraphSelect').val(attributes[counter]);
 		$('#barGraphSelect').material_select();
 		initBarGraph(counter);
 	});
