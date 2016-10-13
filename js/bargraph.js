@@ -59,14 +59,20 @@ function makeGraph(){
 		.attr("x", function(d,i){
 			return x(i)
 		})
+		// .attr("y", function(d){
+		// 	return height - y(d);
+		// })
 		.attr("y", function(d){
-			return height - y(d);
+			return 0;
 		})
 		.attr("height", function(d) {
+			console.log(d);
 			return y(d);
 		})
 		.attr("width", width/numAttr - padding)
-		.attr("fill",function(d,i){return colors(i)})
+		.attr("fill",function(d,i){
+			return colors(i)
+		});
 
 	var trying = []
 	for (i in counts){
@@ -83,32 +89,54 @@ function makeGraph(){
 			var dKey = Object.keys(d)[0];
 			return dKey != "" ? dKey + ": " + d[dKey] : "Didn't Answer" + ": " + d[dKey];
 		});
-		
+
 	barGraph.selectAll("rect")
 		.on("mouseover", hoverOver)
 		.on("mouseout", hoverOut);
 }
 
 function hoverOver(){
-	var transform = d3.svg.transform()
-	    .scale(function(d) { return d * 2 });
-
-	d3.select(this)
+	d3.selectAll('rect')
 		.style({opacity:'0.8'})
 		.transition()
-		.duration(1000)
-		.attr("transform",transform);
+		.duration(5000)
+
+		var selection = d3.select(this);
+		var offsetX = parseFloat(selection.attr("x"))+
+		parseFloat(selection.attr("width")/2.0);
+		var offsetY = parseFloat(selection.attr("y"))+
+		parseFloat(selection.attr("height")/2.0);
+		d3.select(this)
+			.style({opacity:'1'})
+			.transition()
+			.duration(500)
+			.style("fill",function(d){
+				var color = d3.rgb($(this).attr("fill"))
+				return color.darker(1);
+			})
+			.attr({
+				transform:"translate("+offsetX+ ","+offsetY+") "+
+				"scale(2) "+
+				"translate(-"+offsetX+",-"+offsetY+ ")"
+			});
+		this.parentNode.appendChild(this);
 }
 
 function hoverOut(){
 	var value = $(this).children('title').val();
 	// value = x(value);
+	var colors = d3.scale.category20()
 
 	d3.select(this)
 		.style({opacity:'1.0'})
 		.transition()
 		.duration(1000)
-		.attr("transform", "scale(1)");
+		.attr("transform", "scale(1)")
+		.style("fill",function(d,i){
+				// var color = d3.rgb($(this).attr("fill"))
+				// return color.brighter(1);
+				return colors[i];
+			});
 }
 
 function putValuesInArray(){
