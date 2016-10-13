@@ -21,12 +21,6 @@ for key in clusters:
 		array.append(a)
 
 sof = pd.read_csv('../data/stackoverflow.csv')
-for index, row in sof.iterrows():
-	numNulls = sof.isnull().sum().sum()
-	if numNulls > 5:
-		sof.drop(index, inplace=True)
-
-
 sof_Keep = sof[sof['id'].isin(array)]
 
 # Save to csv again
