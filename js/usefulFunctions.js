@@ -18,6 +18,5 @@ function putValuesInArray(jsonArray){
 	for (var c in jsonArray){
 		objectArray.push(jsonArray[c]);
 	}
-
 	return objectArray;
 }
