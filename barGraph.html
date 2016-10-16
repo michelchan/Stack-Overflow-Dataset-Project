@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Stack Overflow Data</title>
+
+	<link rel="stylesheet" type="text/css" href="css/materialize.min.css">
+
+	<script type="text/javascript" src="js/libraries/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="js/libraries/materialize.min.js"></script>
+	<script type="text/javascript" src="js/libraries/underscore.js"></script>
+	<script type="text/javascript" src="js/libraries/d3.v3.js"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> 
+</head>
+<body>
+	<div class="container">
+		<div id="loading" style="position:absolute;top:50%;left-margin:auto">
+			<h1>Loading data...</h1>
+			<div class="progress">
+		    	<div class="indeterminate"></div>
+		  	</div>
+		</div>
+		<div id="body" style="display:none;">
+			<div class="row">
+				<div class="input-field col s4">
+					<select id="bargraphSelect"></select>
+					<label>Variable Select</label>
+				</div>
+				<div class="input-field col s8">
+					<label id="bargraphLabel">Variable</label>
+				</div>
+			</div>
+			<div class="row">
+				<div id="barGraph" class="input-field col s10">
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/attributesMapping.js"></script>
+	<script type="text/javascript" src="js/bargraph.js"></script>
+</body>
+</html>
