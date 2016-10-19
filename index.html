@@ -3,41 +3,32 @@
 <head>
 	<meta charset="utf-8">
 	<title>Stack Overflow Data</title>
-
-	<link rel="stylesheet" type="text/css" href="css/materialize.min.css">
-
-	<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-	<script type="text/javascript" src="js/materialize.min.js"></script>
-	<script type="text/javascript" src="js/underscore.js"></script>
-	<script type="text/javascript" src="js/original/d3.v3.js"></script>
-	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> 
-	<script src="js/d3-transform.js"></script>
-
 </head>
 <body>
 	<div class="container">
-		<div id="loading" style="position:absolute;top:50%;left-margin:auto">
-			<h1>Loading data...</h1>
-			<div class="progress">
-		    	<div class="indeterminate"></div>
-		  	</div>
-		</div>
-		<div id="body" style="display:none;">
-			<div class="row">
-				<div class="input-field col s4">
-					<select id="bargraphSelect"></select>
-					<label>Variable Select</label>
-				</div>
-				<div class="input-field col s8">
-					<label id="bargraphLabel">Variable</label>
-				</div>
+		<ul id="dropdown1" class="dropdown-content">
+			<li><a href="bargraph.html">Bar Graph</a></li>
+			<li><a href="bivariate.html">Bivariate Scatterplot</a></li>
+			<li><a href="#!">10x10 Correlation Matrix</a></li>
+			<li><a href="#!">5x5 Scatter Plot Matrix</a></li>
+			<li><a href="#!">Parallel Coordinates with 10 Axes</a></li>
+			<li><a href="#!">PCA Plot with Scree Plot</a></li>
+			<li><a href="#!">MDS Display of Data</a></li>
+			<li><a href="#!">MDS Display of Attributes</a></li>
+			<li class="divider"></li>
+			<li><a href="#!">three</a></li>
+		</ul>
+		<nav>
+			<div class="nav-wrapper">
+				<a href="#!" class="brand-logo">Logo</a>
+				<ul class="right hide-on-med-and-down">
+					<li><a href="sass.html">Sass</a></li>
+					<li><a href="badges.html">Components</a></li>
+					<!-- Dropdown Trigger -->
+					<li><a class="dropdown-button" href="#!" data-activates="dropdown1">Dropdown<i class="material-icons right">arrow_drop_down</i></a></li>
+				</ul>
 			</div>
-			<div class="row">
-				<div id="barGraph" class="input-field col s10">
-
-				</div>
-			</div>
-		</div>
+		</nav>
 	</div>
 	<script type="text/javascript" src="js/attributesMapping.js"></script>
 	<script type="text/javascript" src="js/bargraph.js"></script>

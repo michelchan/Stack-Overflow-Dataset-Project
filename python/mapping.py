@@ -74,6 +74,7 @@ choices = {
 	',No,': ',1,',
 	'-1 (please specify)': '-1',
 	'Other (please specify)': '-1',
+	"I don't know": '2',
 
 	# Employment Status
 	'Employed full-time': '0',
@@ -142,10 +143,12 @@ choices = {
 
 	# Commit frequency
 	'Multiple times a day': '0',
-	'I don\'t \"check-in or commit code\", but I do put code into production somewhat frequently': '1',
+	'I don\'t "check-in or commit code", but I do put code into production somewhat frequently': '1',
 	'Once a day': '2',
 	'A couple times a week': '3',
 	'I never check-in or commit code': '4',
+	'A few times a month': '5',
+
 
 	# Cats vs Dogs
 	"Cats": '0',
