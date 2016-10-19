@@ -50,7 +50,7 @@ function makeBarGraph(){
 		.attr("width", width)
 		.attr("height", height);
 
-	var colors = d3.scale.category20()
+	var colors = d3.scale.category20();
 
 	var rect = barGraph.selectAll("rect")
 		.data(adjusted)
