@@ -1,26 +1,27 @@
 from sklearn.cluster import KMeans
 import numpy as np
 import pandas as pd
-
+import random
 
 # Load csv from file
-df = pd.read_csv('../data/stackoverflow.csv')
+df = pd.read_csv('../data/reduceddata.csv')
 
-# Set up data
-# df = df.fillna('n/a')
-# df.replace({'collector':choices, 'gender':choices})
-# df.applymap(lambda s: mapping.get(s) if s in mapping else s)
-# del df['Unnamed: 0']
+df = df.fillna('-99')
+kmeans = KMeans(n_clusters = 10)
+kmeans.fit(df)
 
-from sklearn.cross_validation import train_test_split
-occupation = df.pop('occupation')
-X = df
-X_train, X_test, y_train, y_test = train_test_split( X, occupation, test_size=0.33, random_state=42)
-print X_test
+# Separate clusters by the appropriate bin
+clusters = {i: np.where(kmeans.labels_ == i)[0] for i in range(kmeans.n_clusters)}
 
-# df = df.fillna('-99')
-# kmeans = KMeans(n_clusters = 10).transform(df)
-# print kmeans.cluster_centers_
+# Choose 500 from each cluster
+array = []
+for key in clusters:
+	for i in range(500):
+		a = random.choice(clusters[key])
+		array.append(a)
+
+sof = pd.read_csv('../data/convertedToInt.csv')
+sof_Keep = sof[sof['id'].isin(array)]
 
 # Save to csv again
-X_test.to_csv('../data/sampling.csv', index=False)
+sof_Keep.to_csv('../data/kmeanedWithInts.csv', index=False)

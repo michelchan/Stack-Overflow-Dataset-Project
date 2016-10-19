@@ -1,5 +1,5 @@
-var data;
-var counts = {};
+var data; // original json of the data
+var counts = {}; // object that holds each option + # of times it appears
 var width = $(window).width()* .7;
 var height = $(window).height() * .8;
 var padding = 5;
@@ -9,7 +9,7 @@ d3.json("./data/data.json", function(error, json){
 	if (error) return console.warn(error);
 	$("#body").show();
 	$("#loading").hide();
-	loadSelect();
+	loadSelect('#bargraphSelect', attributes);
 	data = json;
 	initBarGraph();
 });
@@ -18,20 +18,20 @@ function initBarGraph(){
 	removeBars();
 	if (counter)
 		bucketData(attributes[counter]);
-	makeGraph();
+	makeBarGraph();
 }
 
 function bucketData(string){
 	counts = _.countBy(data, string);
 }
 
-function makeGraph(){
+function makeBarGraph(){
 	var numAttr = Object.keys(counts).length;
-	var countsValue = putValuesInArray();
-	var adjusted = [];
+	var countsValue = putValuesInArray(counts); // everything in counts as an array
+	var adjusted = []; // countsValue but adjusted to the new scale
 
-	var arrayMin = Math.ceil(d3.min(array));
-	var arrayMax = Math.ceil(d3.max(array));
+	var arrayMin = Math.ceil(d3.min(countsValue));
+	var arrayMax = Math.ceil(d3.max(countsValue));
 
 	var x = d3.scale.linear()
 		.domain([0, countsValue.length])
@@ -41,8 +41,8 @@ function makeGraph(){
 		.domain([arrayMin, arrayMax]);
 
 
-	for (var i = 0; i<array.length; i++){
-		adjusted[i] = x(array[i]);
+	for (var i = 0; i<countsValue.length; i++){
+		adjusted[i] = x(countsValue[i]);
 	}
 
 	var barGraph = d3.select("#barGraph")
@@ -50,7 +50,7 @@ function makeGraph(){
 		.attr("width", width)
 		.attr("height", height);
 
-	var colors = d3.scale.category20()
+	var colors = d3.scale.category20();
 
 	var rect = barGraph.selectAll("rect")
 		.data(adjusted)
@@ -131,36 +131,12 @@ function hoverOut(){
 		});
 }
 
-function putValuesInArray(){
-	array = [];
-	for (var c in counts){
-		array.push(counts[c]);
-	}
-
-	return array;
-}
-
 function removeBars(){
 	counts = {};
 	d3.select("#barGraph").selectAll("div")
 	.remove();
 	d3.select("#barGraph").selectAll("svg")
 	.remove();
-}
-
-function loadSelect(){
-	var selectHTML="";
-	var attr = Object.keys(attributes);
-	for (i=1; i<attr.length+1; i++){
-		selectHTML += "<option value="+ i +">" + attributes[i] +"</option>\n";
-	}
-	$('#bargraphSelect').append(selectHTML);
-	$('#bargraphSelect').trigger('change');
-}
-
-function editString(string){
-	string = string.replace(/_/g," ");
-	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 $(document).ready(function() {
@@ -171,7 +147,7 @@ $(document).ready(function() {
 		var string = editString(attributes[$("#bargraphSelect").val()]);
 		$("#bargraphLabel").text(string)
 		counter = $("#bargraphSelect").val();
-		initBarGraph(counter);
+		initBarGraph();
 	});
 	$('#barGraph').click(function() {
 		counter++;
@@ -179,6 +155,6 @@ $(document).ready(function() {
 		$("#bargraphLabel").text(string)
 		$('#barGraphSelect').val(attributes[counter]);
 		$('#barGraphSelect').material_select();
-		initBarGraph(counter);
+		initBarGraph();
 	});
 });
