@@ -6,7 +6,7 @@ var height = $(window).height() * .8;
 
 var padding = 5;
 var counter = 1;
-
+// todo: Add key for variables that I changed from strings to ints
 d3.json("./data/datawithInts.json", function(error, json){
 	if (error) return console.warn(error);
 	$("#body").show();
