@@ -70,13 +70,22 @@ function makeBivariateGraph() {
 		.style("text-anchor", "end")
 		.text(variable2);
 
+	var colors = d3.scale.category20();
+
 	bivariateGraph.selectAll("circle")
 		.data(varCombined)
 		.enter()
 		.append("circle")
-		.attr("x", xMap)
-		.attr("y", yMap)
-		.attr("r", 4);
+		.attr("cx", xMap)
+		.attr("cy", yMap)
+		.attr("r", 4)
+		.attr("fill", function(d,i){
+			return colors(i);
+		})
+		.append("title")
+		.text(function(d){
+			return variable1 + ": " + d[0] + ", " + variable2 + ": " + d[1];
+		});
 }
 
 function getDataByVariable(str) {
