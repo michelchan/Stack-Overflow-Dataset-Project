@@ -74,12 +74,14 @@ function makePCAPlot(){
 function makeScreePlot(){
 	var xScale = d3.scale.linear()
 		.domain([0, eigenvalues.length])
-		.range([padding, width - padding * 2]);
+		.range([0, width])
+		.nice();
 
 	var values = d3.values(eigenvalues);
 	var yScale = d3.scale.linear()
 		.range([height - padding, padding])
-		.domain([d3.min(values), d3.max(values)]);
+		.domain([d3.min(values), d3.max(values)])
+		.nice();
 
 	//Define X axis
 	var xAxis = d3.svg.axis()
@@ -126,7 +128,7 @@ function makeScreePlot(){
 			return yScale(d);
 		})
 		.attr("height", function(d) {
-			return yScale(d);
+			return height - yScale(d);
 		})
 		.attr("width", width/10)
 		.attr("fill", function(d,i){
