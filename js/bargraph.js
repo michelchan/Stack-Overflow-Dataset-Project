@@ -5,7 +5,7 @@ var height = $(window).height() * .8;
 var padding = 5;
 var counter = 1;
 
-d3.json("./data/data.json", function(error, json){
+d3.json("./data/original/data.json", function(error, json){
 	if (error) return console.warn(error);
 	$("#body").show();
 	$("#loading").hide();
