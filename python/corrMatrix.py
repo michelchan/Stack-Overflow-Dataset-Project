@@ -11,4 +11,4 @@ corr = df.corr()
 print corr
 
 # Save to csv again
-corr.to_json('../data/correlation.json')
+corr.to_csv('../data/correlation.csv')
