@@ -4,9 +4,9 @@ import pandas as pd
 import random
 
 # Load csv from file
-df = pd.read_csv('../data/reduceddata.csv')
+df = pd.read_csv('../data/etc/reduceddata.csv')
 
-df = df.fillna('-99')
+df = df.fillna(df.mean())
 kmeans = KMeans(n_clusters = 10)
 kmeans.fit(df)
 
@@ -20,8 +20,9 @@ for key in clusters:
 		a = random.choice(clusters[key])
 		array.append(a)
 
-sof = pd.read_csv('../data/convertedToInt.csv')
+sof = pd.read_json('../data/original/datawithInts.json')
+sof = sof.fillna(sof.mean())
 sof_Keep = sof[sof['id'].isin(array)]
 
 # Save to csv again
-sof_Keep.to_csv('../data/kmeanedWithInts.csv', index=False)
+sof_Keep.to_csv('../data/kmeaned/kmeanedWithInts.csv', index=False)

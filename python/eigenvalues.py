@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 # Load csv from file
-df = pd.read_json('../data/datawithIntsNoWords.json')
+df = pd.read_json('../data/kmeaned/datawithIntsNoWords.json')
 X = df.ix[:,0:10].values
 y = df.ix[:,10].values
 

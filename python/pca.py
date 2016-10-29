@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction import DictVectorizer
 
 # Load csv from file
-df = pd.read_json('../data/datawithIntsNoWords.json')
+df = pd.read_json('../data/kmeaned/datawithIntsNoWords.json')
 X = df.ix[:,0:2].values
 y = df.ix[:,2].values
 
