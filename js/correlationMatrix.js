@@ -131,7 +131,7 @@ function makeCorrMatrix(){
     var gs = corrMatrix.append("g")
       .attr("class", "axisClass")
       .call(colorAxis)
-      .attr("transform", "translate(" + (width - margin.right - margin.left) + " ," + margin.bottom +")")
+      .attr("transform", "translate(" + (boxWidth + margin.right) + " ," + margin.bottom +")")
 
     var iR = d3.range(-1, 1.01, 0.01);
     var h = height / iR.length + 3;
@@ -203,4 +203,20 @@ $(document).ready(function() {
 	$("#body").show();
 	$("#loading").hide();
 	initCorrMatrix();
+
+	// delete this when done VVVV
+	d3.json("./data/correlation/correlation.json", function(error, json){
+		var correlations = {};
+		var objects = [];
+		for (i in json){
+			correlations[i] = 0;
+			objects.push(json[i]);
+		}
+		for (var key in objects){
+			for (var k in objects[key]){
+				correlations[k] += objects[key][k];
+			}
+		}
+		console.log(correlations);
+	})
 });
