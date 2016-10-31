@@ -176,46 +176,6 @@ function makeScatterMatrix(){
 		.style("fill", function(d){
 			return "#000"
 		});
-
-
-	// Original
-	// var box = scatterMatrix.selectAll(".box")
-	// 	.data(corr)
-	// 	.enter()
-	// 	.append("g")
-	// 	.attr("class", "box")
-
-	// box.append("rect")
-	//     .attr("width", xSpace)
- //        .attr("height", ySpace)
- //        .attr("x", - xSpace / 2)
- //        .attr("y", - ySpace / 2)
-
-  //   box.filter(function(d){
-	 //    var ypos = domain.indexOf(d[1]);
-	 //    var xpos = domain.indexOf(d[0]);
-	 //    	for (var i = (ypos + 1); i < num; i++){
-	 //    		if (i === xpos) return false;
-	 //    	}
-	 //    	return true;
-	 //    })
-		// .append("text")
-  //       .attr("y", 5)
-  //       .text(function(d) {
-  //       	if (d[0] == d[1]) {
-  //       		return d[0];
-  //       	}
-  //       })
-  //       .style("fill", "#000");
-
- //    var scatterplots = box.filter(function(d){
-	// 	var ypos = domain.indexOf(d[1]);
-	// 	var xpos = domain.indexOf(d[0]);
-	// 	for (var i = (ypos + 1); i < num; i++){
-	// 		if (i === xpos) return true;
-	// 	}
-	// 	return false;
-	// });
 }
 
 function removeMatrix(){
