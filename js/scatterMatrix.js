@@ -147,10 +147,11 @@ function makeScatterMatrix(){
 	    	return true;
 	    })
 		.append("text")
-        .attr("y", 5)
+		.attr("x", 150/2)
+        .attr("y", 150/2)
         .text(function(d) {
-        	if (d[x] == d[y]) {
-        		return d[x];
+        	if (d.x == d.y) {
+        		return d.x;
         	}
         })
         .style("fill", "#000");
