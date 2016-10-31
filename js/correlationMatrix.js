@@ -25,7 +25,6 @@ d3.csv("./data/correlation/correlation.csv", function(error, rows){
 			});
 		}
 	});
-	console.log(data)
 	initCorrMatrix();
 });
 

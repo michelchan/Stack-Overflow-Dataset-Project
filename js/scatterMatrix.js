@@ -1,9 +1,10 @@
 var data = [];
 var corr = [];
+var attributes = [];
 var position = {};
 var width = $(window).width()* .7;
 var height = $(window).height();
-var padding = 5;
+var padding = 20;
 var counter = 1;
 var margin = {top: 40, right: 10, bottom: 20, left: 30};
 
@@ -38,6 +39,10 @@ d3.json("./data/correlation/correlation.json", function(error, json){
 			corr.push([items[i][0],items[j][0]]);
 		}
 	}
+
+	for (var i = 0; i < items.length; i++){
+		attributes.push(items[i][0]);
+	}
 });
 
 d3.json("./data/correlation/forCorrelationMatrix.json", function(error2, d) {
@@ -56,7 +61,7 @@ d3.json("./data/correlation/forCorrelationMatrix.json", function(error2, d) {
 		function value(d) {return d[attribute]; }
 		position[attribute] = d3.scale.linear()
 			.domain([d3.min(d.values, value), d3.max(d.values, value)])
-			.range([padding/2, width - padding/2]);
+			.range([padding/2, 150 - padding/2]);
 	});
 	$("#body").show();
 	$("#loading").hide();
@@ -89,27 +94,51 @@ function makeScatterMatrix(){
 
 	var scatterMatrix = d3.select("#scatterMatrix")
 		.append("svg")			
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
+		.attr("width", 150 * 5)
+		.attr("height", 150* 5)
 		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var box = scatterMatrix.selectAll(".box")
-		.data(corr)
+	var column = scatterMatrix.selectAll("g")
+		.data(attributes)
 		.enter()
 		.append("g")
-		.attr("class", "box")
-		.attr("transform", function(d) {
-        	return "translate(" + (x(d[0]) + margin.left + margin.right )+ "," + (y(d[1]) + margin.top) + ")";
-        });
+		.attr("transform", function(d, i) { return "translate(" + i * 150 + ",0)"; });
 
-	box.append("rect")
-	    .attr("width", xSpace)
-        .attr("height", ySpace)
-        .attr("x", - xSpace / 2)
-        .attr("y", - ySpace / 2)
+	var row = column.selectAll("g")
+		.data(cross(attributes))
+		.enter()
+		.append("g")
+		.attr("transform", function(d, i) { return "translate(0," + i * 150 + ")"; });
 
-    box.filter(function(d){
+	row.selectAll("line.x")
+		.data(function(d) {return position[d.x].ticks(5).map(position[d.x]); })
+		.enter()
+		.append("line")
+		.attr("class", "x")
+		.attr("x1", function(d) {return d;})
+		.attr("x2", function(d) {return d;})
+		.attr("y1", padding / 2)
+		.attr("y2", 150 - padding/2);
+
+	row.selectAll("line.y")
+		.data(function(d) { return position[d.y].ticks(5).map(position[d.y]); })
+		.enter().append("svg:line")
+		.attr("class", "y")
+		.attr("x1", padding / 2)
+		.attr("x2", 150 - padding / 2)
+		.attr("y1", function(d) { return d; })
+		.attr("y2", function(d) { return d; });
+
+	row.append("rect")
+		.attr("x", padding/2)
+		.attr("y", padding/2)
+		.attr("width", 150 - padding)
+		.attr("height", 150 - padding)
+		.style("fill", "none")
+		.style("stroke", "#aaa")
+		.style("stroke-width", 1.5);
+
+	row.filter(function(d){
 	    var ypos = domain.indexOf(d[1]);
 	    var xpos = domain.indexOf(d[0]);
 	    	for (var i = (ypos + 1); i < num; i++){
@@ -120,44 +149,72 @@ function makeScatterMatrix(){
 		.append("text")
         .attr("y", 5)
         .text(function(d) {
-        	if (d[0] == d[1]) {
-        		return d[0];
+        	if (d[x] == d[y]) {
+        		return d[x];
         	}
         })
         .style("fill", "#000");
 
-    var scatterplots = box.filter(function(d){
-		var ypos = domain.indexOf(d[1]);
-		var xpos = domain.indexOf(d[0]);
-		for (var i = (ypos + 1); i < num; i++){
-			if (i === xpos) return true;
-		}
-		return false;
-	});
-
-    scatterplots.append("circle")
-    	.data(data)
-    	.enter()
-    	.append("circle")
+    row.selectAll("circle")
+		.data(cross(data))
+		.enter()
+		.append("circle")
     	.attr("cx", function(d) {
-    	});
+    		if (d.x.x == d.x.y){
+    			return -999;
+    		}
+    		return position[d.x.x](d.y[d.x.x]); 
+    	})
+    	.attr("cy", function(d) {
+    		if (d.x.x == d.x.y){
+    			return -999;
+    		}
+    		return 150 - position[d.x.y](d.y[d.x.y]);
+    	})
+		.attr("r", 3)
+		.style("fill", function(d){
+			return "#000"
+		});
 
 
-	// scatterMatrix.selectAll("circle")
-	// 	.data(data)
+	// Original
+	// var box = scatterMatrix.selectAll(".box")
+	// 	.data(corr)
 	// 	.enter()
-	// 	.append("circle")
-	// 	.attr("cx", function(d) {
-	// 		return xScale(d[0]);
-	// 	})
-	// 	.attr("cy", function(d) {
-	// 		return yScale(d[1]);
-	// 	})
-	// 	.attr("r", 4)
-	// 	.attr("fill", function(d,i){
-	// 		return colors(i);
-	// 	})
-	// 	.append("title");
+	// 	.append("g")
+	// 	.attr("class", "box")
+
+	// box.append("rect")
+	//     .attr("width", xSpace)
+ //        .attr("height", ySpace)
+ //        .attr("x", - xSpace / 2)
+ //        .attr("y", - ySpace / 2)
+
+  //   box.filter(function(d){
+	 //    var ypos = domain.indexOf(d[1]);
+	 //    var xpos = domain.indexOf(d[0]);
+	 //    	for (var i = (ypos + 1); i < num; i++){
+	 //    		if (i === xpos) return false;
+	 //    	}
+	 //    	return true;
+	 //    })
+		// .append("text")
+  //       .attr("y", 5)
+  //       .text(function(d) {
+  //       	if (d[0] == d[1]) {
+  //       		return d[0];
+  //       	}
+  //       })
+  //       .style("fill", "#000");
+
+ //    var scatterplots = box.filter(function(d){
+	// 	var ypos = domain.indexOf(d[1]);
+	// 	var xpos = domain.indexOf(d[0]);
+	// 	for (var i = (ypos + 1); i < num; i++){
+	// 		if (i === xpos) return true;
+	// 	}
+	// 	return false;
+	// });
 }
 
 function removeMatrix(){
@@ -167,10 +224,14 @@ function removeMatrix(){
 	.remove();
 }
 
-function cross(a, b) {
-  var c = [], n = a.length, m = b.length, i, j;
-  for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
-  return c;
+function cross(a) {
+	return function(d) {
+		var c = [];
+		for (var i = 0, n = a.length; i < n; i++){
+			c.push({x: d, y: a[i]});
+		}
+		return c;
+	};
 }
 
 $(document).ready(function() {
