@@ -1,3 +1,9 @@
+{"attributes":["age_midpoint","gender","occupation_group",
+"experience_midpoint", "salary_midpoint", "programming_ability",
+"job_satisfaction", "commit_frequency", "dogs_vs_cats",
+"why_learn_new_tech"],
+
+"values":
 [
  {
    "age_midpoint": 32,
@@ -57588,3 +57594,4 @@
    "why_learn_new_tech": -2
  }
 ]
+}

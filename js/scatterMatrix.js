@@ -1,5 +1,6 @@
 var data = [];
 var corr = [];
+var position = {};
 var width = $(window).width()* .7;
 var height = $(window).height();
 var padding = 5;
@@ -31,17 +32,34 @@ d3.json("./data/correlation/correlation.json", function(error, json){
 	items.sort(function(first, second) {
 		return second[1] - first[1];
 	});
-	corr = items.slice(0,5);
+	items = items.slice(0,5);
+	for (var i = 0; i < items.length; i++){
+		for (var j = 0; j < items.length; j++){
+			corr.push([items[i][0],items[j][0]]);
+		}
+	}
 });
 
 d3.json("./data/correlation/forCorrelationMatrix.json", function(error2, d) {
 	if (error2) return console.warn(error2);
-	for (object in d){
+	for (object in d.values){
+		var item = [];
 		for (i in corr){
-			data.push([corr[i][0], d[object][corr[i][0]]]);
-			// data[items[i][0]] = d[object][items[i][0]]; //if going back to objects
+			// data.push([corr[i][0], d[object][corr[i][0]]]);
+			item[corr[i][0]] = d.values[object][corr[i][0]]
+			// data[corr[i][0]] = d[object][corr[i][0]]; //if going back to objects
 		}
+		data.push(item);
 	}
+
+	d.attributes.forEach(function(attribute) {
+		function value(d) {return d[attribute]; }
+		position[attribute] = d3.scale.linear()
+			.domain([d3.min(d.values, value), d3.max(d.values, value)])
+			.range([padding/2, width - padding/2]);
+	});
+	$("#body").show();
+	$("#loading").hide();
 	initScatterMatrix();
 });
 
@@ -82,7 +100,7 @@ function makeScatterMatrix(){
 		.append("g")
 		.attr("class", "box")
 		.attr("transform", function(d) {
-        	return "translate(" + (x(d[0]) + margin.left + margin.right )+ "," + (y(d[0]) + margin.top) + ")";
+        	return "translate(" + (x(d[0]) + margin.left + margin.right )+ "," + (y(d[1]) + margin.top) + ")";
         });
 
 	box.append("rect")
@@ -92,22 +110,7 @@ function makeScatterMatrix(){
         .attr("y", - ySpace / 2)
 
     box.filter(function(d){
-			var ypos = domain.indexOf(d[1]);
-			var xpos = domain.indexOf(d[0]);
-			for (var i = (ypos + 1); i < num; i++){
-				if (i === xpos) return true;
-			}
-			return false;
-		})
-		.append("rect")
-		.attr("width", xSpace)
-		.attr("height", ySpace)
-		.attr("x", - xSpace / 2)
-        .attr("y", - ySpace / 2)
-		.style("fill", "#fff");			
-
-    box.filter(function(d){
-	    var ypos = domain.indexOf(d[0]);
+	    var ypos = domain.indexOf(d[1]);
 	    var xpos = domain.indexOf(d[0]);
 	    	for (var i = (ypos + 1); i < num; i++){
 	    		if (i === xpos) return false;
@@ -117,13 +120,27 @@ function makeScatterMatrix(){
 		.append("text")
         .attr("y", 5)
         .text(function(d) {
-        	if (d[0]) {
+        	if (d[0] == d[1]) {
         		return d[0];
-        	} else {
-        		return d[1].value.toFixed(2);
         	}
         })
         .style("fill", "#000");
+
+    var scatterplots = box.filter(function(d){
+		var ypos = domain.indexOf(d[1]);
+		var xpos = domain.indexOf(d[0]);
+		for (var i = (ypos + 1); i < num; i++){
+			if (i === xpos) return true;
+		}
+		return false;
+	});
+
+    scatterplots.append("circle")
+    	.data(data)
+    	.enter()
+    	.append("circle")
+    	.attr("cx", function(d) {
+    	});
 
 
 	// scatterMatrix.selectAll("circle")
@@ -150,8 +167,12 @@ function removeMatrix(){
 	.remove();
 }
 
+function cross(a, b) {
+  var c = [], n = a.length, m = b.length, i, j;
+  for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
+  return c;
+}
+
 $(document).ready(function() {
-	$("#body").show();
-	$("#loading").hide();
-	initScatterMatrix();
+
 });
