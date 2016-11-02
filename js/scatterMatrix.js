@@ -8,8 +8,6 @@ var padding = 20;
 var counter = 1;
 var margin = {top: 40, right: 10, bottom: 20, left: 30};
 
-//@TODO put everything as objects into data. And fix it.
-
 d3.json("./data/correlation/correlation.json", function(error, json){
 	if (error) return console.warn(error);
 
