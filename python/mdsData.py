@@ -5,7 +5,7 @@ from sklearn.metrics import euclidean_distances
 from sklearn.datasets import make_classification
 
 data, labels = make_classification()
-mds = MDS(n_components = 2)
+mds = MDS(n_components = 2, dissimilarity='euclidean')
 df = pd.read_json("../data/kmeaned/datawithIntsNoWords.json")
 
 d = mds.fit_transform(df).tolist()

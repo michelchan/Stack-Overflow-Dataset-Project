@@ -3,35 +3,35 @@
 <head>
 	<meta charset="utf-8">
 	<title>Stack Overflow Data</title>
+	<link rel="stylesheet" text="text/css" href="/css/materialize.min.css">
+	<script src="/js/libraries/jquery-3.1.1.min.js"></script>
+	<script src="/js/libraries/materialize.min.js"></script>
 </head>
 <body>
-	<div class="container">
-		<ul id="dropdown1" class="dropdown-content">
-			<li><a href="bargraph.html">Bar Graph</a></li>
-			<li><a href="bivariate.html">Bivariate Scatterplot</a></li>
-			<li><a href="correlationMatrix.html">10x10 Correlation Matrix</a></li>
-			<li><a href="scatterMatrix.html">5x5 Scatter Plot Matrix</a></li>
-			<li><a href="parallelcoordinates.html">Parallel Coordinates with 10 Axes</a></li>
-			<li><a href="pcaPlot.html">PCA Plot with Scree Plot</a></li>
-			<li><a href="biplot.html">Biplot</a></li>
-			<li><a href="mdsData.html">MDS Display of Data</a></li>
-			<li><a href="mdsAttributes.html">MDS Display of Attributes</a></li>
-			<li class="divider"></li>
-			<li><a href="#!">three</a></li>
-		</ul>
-		<nav>
+	<div>
+		<nav class="nav-extended">
 			<div class="nav-wrapper">
-				<a href="#!" class="brand-logo">Logo</a>
-				<ul class="right hide-on-med-and-down">
-					<li><a href="sass.html">Sass</a></li>
-					<li><a href="badges.html">Components</a></li>
-					<!-- Dropdown Trigger -->
-					<li><a class="dropdown-button" href="#!" data-activates="dropdown1">Dropdown<i class="material-icons right">arrow_drop_down</i></a></li>
+				<a href="#" class="brand-logo">Logo</a>
+				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+				<ul id="nav-mobile" class="right hide-on-med-and-down">
+					<li><a href="about.html">About</a></li>
+				</ul>
+				<ul class="side-nav" id="mobile-demo">
+					<li><a href="about.html">About</a></li>
+				</ul>
+
+				<ul class="tabs tabs-transparent">
+					<li class="tab"><a href="#bgTab">Bar Graph</a></li>
+					<li class="tab"><a href="#cmTab">10x10 Correlation Matrix</a></li>
+					<li class="tab"><a href="#pcTab">Parallel Coordinates</a></li>
+					<li class="tab"><a href="#ppTab">PCA Plot with Scree Plot</a></li>
 				</ul>
 			</div>
 		</nav>
+		<div id="bgTab" class="col s12">Hello World</div>
+		  <div id="cmTab" class="col s12">Test 2</div>
+		  <div id="pcTab" class="col s12">Test 3</div>
+		  <div id="ppTab" class="col s12">Test 4</div>
 	</div>
-	<script type="text/javascript" src="js/attributesMapping.js"></script>
-	<script type="text/javascript" src="js/bargraph.js"></script>
 </body>
 </html>
