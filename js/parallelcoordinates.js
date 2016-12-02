@@ -1,7 +1,7 @@
 var data = [];
 var attributes = [];
-var width = $(window).width() * .6;
-var height = $(window).height() * .8;
+var width = $(window).width() * .7;
+var height = $(window).height() * .7;
 var padding = 5;
 var counter = 1;
 var margin = {top: 100, right: 80, bottom: 25, left: 60};

@@ -18,7 +18,7 @@
 	      <li><a href="pcaPlot.html">PCA Plot with Scree Plot</a></li>
 	    </ul>
 
-	<!--     <ul class="tabs tabs-transparent">
+<!-- 	    <ul class="tabs tabs-transparent">
 	      <li class="tab"><a href="">Bar Graph</a></li>
 	      <li class="tab"><a href="#cmTab">10x10 Correlation Matrix</a></li>
 	      <li class="tab"><a href="#pcTab">Parallel Coordinates</a></li>
@@ -27,6 +27,7 @@
 	  </div>
 	</nav>
 	<div>
+		
 	</div>
 </body>
 </html>

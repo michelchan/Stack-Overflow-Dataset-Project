@@ -1,7 +1,7 @@
 var data; // original json of the data
 var counts = {}; // object that holds each option + # of times it appears
 var width = $(window).width()* .7;
-var height = $(window).height() * .8;
+var height = $(window).height() * .7;
 var padding = 5;
 var counter = 1;
 
