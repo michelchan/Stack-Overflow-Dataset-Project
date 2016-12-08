@@ -32,6 +32,7 @@ function makeBarGraph(){
 	var numAttr = Object.keys(counts).length;
 	var countsValue = putValuesInArray(counts); // everything in counts as an array
 	var adjusted = []; // countsValue but adjusted to the new scale
+	var adjustedHeights = [];
 
 	var arrayMin = Math.ceil(d3.min(countsValue));
 	var arrayMax = Math.ceil(d3.max(countsValue));
@@ -48,6 +49,10 @@ function makeBarGraph(){
 
 	for (var i = 0; i<countsValue.length; i++){
 		adjusted[i] = xScale(countsValue[i]);
+	}
+
+	for (var i = 0; i<countsValue.length; i++){
+		adjustedHeights[i] = yScale(countsValue[i]);
 	}
 
 	//Define X axis
@@ -92,11 +97,14 @@ function makeBarGraph(){
 		.attr("x", function(d,i){
 			return xScale(i)
 		})
-		.attr("y", function(d){
-			return yScale(d);
+		.attr("y", function(d,i){
+			return graphHeight - adjustedHeights[i];
+			// return yScale(i);
 		})
-		.attr("height", function(d) {
-			return graphHeight - yScale(d);
+		.attr("height", function(d, i) {
+			console.log(adjustedHeights[i]);
+			return adjustedHeights[i];
+			// return graphHeight - yScale(d);
 		})
 		.attr("width", width/numAttr - padding)
 		.attr("fill", function(d,i){
