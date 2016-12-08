@@ -31,21 +31,24 @@
 	    </ul> -->
 	  </div>
 	</nav>
-	<div class="container">
-		<div id="loading" style="position:absolute;top:50%;left-margin:auto">
+<!-- 	<div class="container">
+ -->		<div id="loading" style="position:absolute;top:50%;left: 20%">
 			<h1>Loading data...</h1>
 			<div class="progress">
 		    	<div class="indeterminate"></div>
 		  	</div>
 		</div>
 		<div id="body" style="display:none;">
-			<div class="row">
+			<div class="row" style="padding-top:10px">
 				<div class="input-field col s4">
 					<select id="bargraphSelect"></select>
 					<label>Variable Select</label>
 				</div>
-				<div class="input-field col s8">
+				<div class="input-field col s5">
 					<label id="bargraphLabel">Variable</label>
+				</div>
+				<div class="input-field col s3">
+					<label>Hover over bars for more details</label>
 				</div>
 			</div>
 			<div class="row">
@@ -54,9 +57,9 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 	<script type="text/javascript" src="js/usefulFunctions.js"></script>
 	<script type="text/javascript" src="js/attributesMapping.js"></script>
-	<script type="text/javascript" src="js/bargraph.js"></script>
+	<script type="text/javascript" src="js/bg.js"></script>
 </body>
 </html>

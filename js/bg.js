@@ -1,9 +1,11 @@
 var data; // original json of the data
 var counts = {}; // object that holds each option + # of times it appears
-var width = $(window).width()* .7;
+
+var width = $(window).width() * .9;
 var height = $(window).height() * .7;
 var padding = 5;
 var counter = 1;
+var margin = {top: 10, right: 10, bottom: 20, left: 50};
 
 d3.json("./data/original/data.json", function(error, json){
 	if (error) return console.warn(error);
@@ -11,10 +13,10 @@ d3.json("./data/original/data.json", function(error, json){
 	$("#loading").hide();
 	loadSelect('#bargraphSelect', attributes);
 	data = json;
-	initBarGraph();
+	init();
 });
 
-function initBarGraph(){
+function init(){
 	removeBars();
 	if (counter)
 		bucketData(attributes[counter]);
@@ -26,6 +28,7 @@ function bucketData(string){
 }
 
 function makeBarGraph(){
+	var graphHeight = 500;
 	var numAttr = Object.keys(counts).length;
 	var countsValue = putValuesInArray(counts); // everything in counts as an array
 	var adjusted = []; // countsValue but adjusted to the new scale
@@ -33,55 +36,71 @@ function makeBarGraph(){
 	var arrayMin = Math.ceil(d3.min(countsValue));
 	var arrayMax = Math.ceil(d3.max(countsValue));
 
-	var x = d3.scale.linear()
+	var xScale = d3.scale.linear()
 		.domain([0, countsValue.length])
-		.range([0,width]);
+		.range([0, width])
+		.nice();
 
-	var y = d3.scale.linear()
-		.domain([arrayMin, arrayMax]);
-
-	var xAxis = d3.svg.axis()
-		.scale(x)
-		.orient("bottom");
-
-	var yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left");
+	var yScale = d3.scale.linear()
+		.range([graphHeight - padding, padding])
+		.domain([0, arrayMax])
+		.nice();
 
 	for (var i = 0; i<countsValue.length; i++){
-		adjusted[i] = x(countsValue[i]);
+		adjusted[i] = xScale(countsValue[i]);
 	}
 
+	//Define X axis
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom")
+		.tickFormat("");
+
+	//Define Y axis
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left");
+
 	var barGraph = d3.select("#barGraph")
-		.append("svg:svg")
-		.attr("width", width)
-		.attr("height", height);
+		.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	barGraph.append("g")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
+		.call(xAxis)
+        .attr("transform", "translate(0," + graphHeight + ")")
+        .append("text")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
 	barGraph.append("g")
-		.attr("transform", "translate(0,0)")
-		.call(yAxis);
+		.call(yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
 
-	var colors = d3.scale.category20();
+	var colors = d3.scale.category10();
 
-	var rect = barGraph.selectAll("rect")
+	barGraph.selectAll("rect")
 		.data(adjusted)
 		.enter()
 		.append("svg:rect")
 		.attr("x", function(d,i){
-			return x(i)
+			return xScale(i)
 		})
 		.attr("y", function(d){
-			return height - y(d);
+			return yScale(d);
 		})
 		.attr("height", function(d) {
-			return y(d)-padding;
+			return graphHeight - yScale(d);
 		})
 		.attr("width", width/numAttr - padding)
-		.attr("fill",function(d,i){
-			return colors(i)
+		.attr("fill", function(d,i){
+			return colors(i);
 		});
 
 	var trying = []
@@ -98,6 +117,23 @@ function makeBarGraph(){
 			var dKey = Object.keys(d)[0];
 			return dKey != "" ? dKey + ": " + d[dKey] : "Didn't Answer" + ": " + d[dKey];
 		});
+	// if (trying.length < 12){
+	// 	trying.forEach(function(d,i){
+	// 		var dKey = Object.keys(d)[0];
+	// 		barGraph.append("text")
+	// 		.text(function(d){
+	// 			return dKey != "" ? dKey : "Didn't Answer";
+	// 		})
+	// 		.attr("fill", "black")
+	// 	    .attr("text-anchor", "end")
+	// 	    .attr('x', margin.left)
+	// 	    .attr("transform", function(d){
+	// 	    	var w = width/(trying.length);
+	//     		return "translate("+ (i * w + i )+ ", " + (graphHeight + margin.top + margin.bottom)+ ")";
+	//     	});
+	// 	})
+	// }
+	
 
 	barGraph.selectAll("rect")
 		.on("mouseover", hoverOver)
@@ -120,11 +156,11 @@ function hoverOver(){
 				var color = d3.rgb($(this).attr("fill"))
 				return color.darker(1);
 			})
-			.attr({
-				transform:"translate("+offsetX+ ","+offsetY+") "+
-				"scale(2) "+
-				"translate(-"+offsetX+",-"+offsetY+ ")"
-			});
+			// .attr({
+			// 	transform:"translate("+offsetX+ ","+offsetY+") "+
+			// 	"scale(2) "+
+			// 	"translate(-"+offsetX+",-"+offsetY+ ")"
+			// });
 		this.parentNode.appendChild(this);
 }
 
@@ -161,7 +197,7 @@ $(document).ready(function() {
 		var string = editString(attributes[$("#bargraphSelect").val()]);
 		$("#bargraphLabel").text(string)
 		counter = $("#bargraphSelect").val();
-		initBarGraph();
+		init();
 	});
 	$('#barGraph').click(function() {
 		counter++;
@@ -169,6 +205,6 @@ $(document).ready(function() {
 		$("#bargraphLabel").text(string)
 		$('#barGraphSelect').val(attributes[counter]);
 		$('#barGraphSelect').material_select();
-		initBarGraph();
+		init();
 	});
 });
