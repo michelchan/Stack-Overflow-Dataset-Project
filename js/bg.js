@@ -88,7 +88,7 @@ function makeBarGraph(){
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 
-	var colors = d3.scale.category10();
+	var colors = d3.scale.category20();
 
 	barGraph.selectAll("rect")
 		.data(adjusted)
@@ -111,10 +111,12 @@ function makeBarGraph(){
 			return colors(i);
 		});
 
-	var trying = []
+	var trying = [];
+	var sum = 0;
 	for (i in counts){
 		var dict = {};
 		dict[i] = counts[i];
+		sum += counts[i];
 		trying.push(dict);
 	}
 
@@ -142,11 +144,68 @@ function makeBarGraph(){
 	// 	})
 	// }
 	
-
 	barGraph.selectAll("rect")
 		.on("mouseover", hoverOver)
 		.on("mouseout", hoverOut);
+
+	var brushStart = 0;
+	var brushEnd = sum;
+
+	var brush = d3.svg.brush()
+		.x(xScale)
+		.on("brush", function() {
+			    b = brush.extent();
+			    var range = width/numAttr;
+
+			    var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range,
+			        localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
+			    console.log(localBrushStart, localBrushEnd)
+
+			    // Snap to rect edge
+			    d3.select("g.brush").call((brush.empty()) ? brush.clear() : 
+			    	brush.extent([xScale.invert(localBrushStart), xScale.invert(localBrushEnd)]));
+
+			    // Fade all years in the histogram not within the brush
+			    d3.selectAll("rect.bar").style("opacity", function(d, i) {
+			    	console.log(d);
+			      return d.x >= localBrushStart && d.x < localBrushEnd || brush.empty() ? "1" : ".4";
+			    });
+			})
+		.on("brushend", brushend);
+
+	var arc = d3.svg.arc()
+		.outerRadius(height / 15)
+		.startAngle(0)
+		.endAngle(function(d,i) {return i ? -Math.PI : Math.PI});
+
+	var brushing = barGraph.append("g")
+		.attr("class", "brush")
+		.call(brush);
+
+	brushing.selectAll(".resize").append("path")
+		.attr("transform", "translate(0," + height/2 + ")")
+		.attr("d", arc);
+	brushing.selectAll("rect")
+		.attr("height", height);
 }
+
+function brushmove(){
+	yScale.domain(xScale.range()).range(xScale.domain());
+    b = brush.extent();
+
+    var amountStart = (brush.empty()) ? brushStart : Math.ceil(y(b[0])),
+        amountEnd = (brush.empty()) ? brushEnd : Math.ceil(y(b[1]));
+
+    // Snap to rect edge
+    d3.select("g.brush").call((brush.empty()) ? brush.clear() : brush.extent([y.invert(amountStart), y.invert(amountEnd)]));
+
+    // Fade all years in the histogram not within the brush
+    d3.selectAll("rect.bar").style("opacity", function(d, i) {
+      return d.x >= amountStart && d.x < amountEnd || brush.empty() ? "1" : ".4";
+    });
+}
+
+function brushend(){}
 
 function hoverOver(){
 	d3.selectAll('rect')
@@ -207,12 +266,12 @@ $(document).ready(function() {
 		counter = $("#bargraphSelect").val();
 		init();
 	});
-	$('#barGraph').click(function() {
-		counter++;
-		var string = editString(attributes[counter]);
-		$("#bargraphLabel").text(string)
-		$('#barGraphSelect').val(attributes[counter]);
-		$('#barGraphSelect').material_select();
-		init();
-	});
+	// $('#barGraph').click(function() {
+	// 	counter++;
+	// 	var string = editString(attributes[counter]);
+	// 	$("#bargraphLabel").text(string)
+	// 	$('#barGraphSelect').val(attributes[counter]);
+	// 	$('#barGraphSelect').material_select();
+	// 	init();
+	// });
 });
