@@ -5,7 +5,8 @@ var width = $(window).width() * .9;
 var height = $(window).height() * .7;
 var padding = 5;
 var counter = 1;
-var margin = {top: 10, right: 10, bottom: 20, left: 50};
+var margin = {top: 10, right: 10, bottom: 20, left: 60};
+var click = false;
 
 d3.json("./data/original/data.json", function(error, json){
 	if (error) return console.warn(error);
@@ -48,6 +49,11 @@ function makeBarGraph(){
 		.range([0, width])
 		.nice();
 
+	var yAxisScale = d3.scale.linear()
+		.range([graphHeight - padding, padding])
+		.domain([0, arrayMax])
+		.nice();
+
 	var yScale = d3.scale.linear()
 		.range([padding, graphHeight - padding])
 		.domain([0, arrayMax])
@@ -55,7 +61,6 @@ function makeBarGraph(){
 
 	for (var i = 0; i<countsValue.length; i++){
 		adjustedHeights[i] = yScale(countsValue[i]);
-		console.log(countsValue[i] + " new : " + adjustedHeights[i])
 	}
 
 	//Define X axis
@@ -66,7 +71,7 @@ function makeBarGraph(){
 
 	//Define Y axis
 	var yAxis = d3.svg.axis()
-		.scale(yScale)
+		.scale(yAxisScale)
 		.orient("left");
 
 	var barGraph = d3.select("#barGraph")
@@ -110,7 +115,8 @@ function makeBarGraph(){
 		.attr("width", width/numAttr - padding)
 		.attr("fill", function(d,i){
 			return colors(i);
-		});
+		})
+		.attr("id", "bars");
 
 	var trying = [];
 	var sum = 0;
@@ -120,6 +126,21 @@ function makeBarGraph(){
 		sum += counts[i];
 		trying.push(dict);
 	}
+
+	barGraph.selectAll("#bars")
+		.on("mouseover", hoverOver)
+		.on("mouseout", hoverOut);
+
+	// barGraph.selectAll("rect")
+	// 	.data(trying)
+	// 	.append("a")
+	// 	.attr("class", "btn tooltipped")
+	// 	.attr("data-position", "top")
+	// 	.attr("data-delay", "50")
+	// 	.attr("data-tooltip", function(d,i){
+	// 		var dKey = Object.keys(d)[0];
+	// 		return dKey != "" ? dKey + ": " + d[dKey] : "Didn't Answer" + ": " + d[dKey];
+	// 	})
 
 	barGraph.selectAll("rect")
 		.data(trying)
@@ -144,91 +165,96 @@ function makeBarGraph(){
 	//     	});
 	// 	})
 	// }
-	
 	var brushStart = 0;
 	var brushEnd = sum;
 	var range = width/numAttr;
 
-	var brush = d3.svg.brush()
-		.x(xScale)
-		.on("brush", function() {
-			    b = brush.extent();
+	var btn = d3.select("#enable");
+	btn.on("click", function() {
+		click = !click;
+		if (click){
+			var brush = d3.svg.brush()
+				.x(xScale)
+				.on("brush", function() {
+					    b = brush.extent();
 
-			    var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range,
-			        localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
+					    var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range,
+					        localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
 
-			    // Snap to rect edge
-			    d3.select("g.brush").call((brush.empty()) ? brush.clear() : 
-			    	brush.extent([xScale.invert(localBrushStart), xScale.invert(localBrushEnd)]));
+					    // Snap to rect edge
+					    d3.select("g.brush").call((brush.empty()) ? brush.clear() : 
+					    	brush.extent([xScale.invert(localBrushStart), xScale.invert(localBrushEnd)]));
 
-			    // Fade all years in the histogram not within the brush
-			    d3.selectAll("rect.bar").style("opacity", function(d, i) {
-			      return d.x >= localBrushStart && d.x < localBrushEnd || brush.empty() ? "1" : ".4";
-			    });
-			})
-		.on("brushend", function(){
-			var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range;
-		    var localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
+					    // Fade all years in the histogram not within the brush
+					    d3.selectAll("rect.bar").style("opacity", function(d, i) {
+					      return d.x >= localBrushStart && d.x < localBrushEnd || brush.empty() ? "1" : ".4";
+					    });
+					})
+				.on("brushend", function(){
+					var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range;
+				    var localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
 
-		    d3.selectAll("rect.bar").style("opacity", function(d, i) {
-		      return d.x >= localBrushStart && d.x <= localBrushEnd || brush.empty() ? "1" : ".4";
-		    });
+				    d3.selectAll("rect.bar").style("opacity", function(d, i) {
+				      return d.x >= localBrushStart && d.x <= localBrushEnd || brush.empty() ? "1" : ".4";
+				    });
 
-		    var startingIndex = localBrushStart/range;
-		    var endingIndex = localBrushEnd/range;
-		    var selectedSum = 0;
-		    for (var i = startingIndex; i < endingIndex; i++){
-		    	selectedSum += countsValue[i];
-		    }
-		    d3.select("#brushNumber")
-		    	.text(localBrushStart == localBrushEnd ? 
-		    		"Number of participants who selected these options: " + 0 : 
-		    		"Number of participants who selected these options: " + selectedSum);
+				    var startingIndex = localBrushStart/range;
+				    var endingIndex = localBrushEnd/range;
+				    var selectedSum = 0;
+				    for (var i = startingIndex; i < endingIndex; i++){
+				    	selectedSum += countsValue[i];
+				    }
+				    if (isNaN(selectedSum)){
+				    	selectedSum = 0;
+				    }
+				    d3.select("#brushNumber")
+				    	.text(localBrushStart == localBrushEnd ? 
+				    		"Number of participants who selected these options: " + 0 : 
+				    		"Number of participants who selected these options: " + selectedSum);
 
-		});
+				});
 
-	var arc = d3.svg.arc()
-		.outerRadius(height / 15)
-		.startAngle(0)
-		.endAngle(function(d,i) {return i ? -Math.PI : Math.PI});
+			var arc = d3.svg.arc()
+				.outerRadius(height / 15)
+				.startAngle(0)
+				.endAngle(function(d,i) {return i ? -Math.PI : Math.PI});
 
-	var brushing = barGraph.append("g")
-		.attr("class", "brush")
-		.call(brush);
+			var brushing = barGraph.append("g")
+				.attr("class", "brush")
+				.call(brush);
 
-	brushing.selectAll(".resize").append("path")
-		.attr("transform", "translate(0," + height/2 + ")")
-		.attr("d", arc);
-	brushing.selectAll("rect")
-		.attr("height", height);
-
-	barGraph.selectAll("rect")
-		.on("mouseover", hoverOver)
-		.on("mouseout", hoverOut);
+			brushing.selectAll(".resize").append("path")
+				.attr("transform", "translate(0," + height/2 + ")")
+				.attr("d", arc);
+			brushing.selectAll("rect")
+				.attr("height", height);
+		}
+		else {
+			d3.select(".brush")
+				.remove();
+		}
+	})
 }
 
 function hoverOver(){
 	d3.selectAll('rect')
 		.style({opacity:'0.3'})
 		.transition()
-		.duration(5000)
+		.duration(5000);
 
-		var selection = d3.select(this);
-		var offsetX = parseFloat(selection.attr("x")) + parseFloat(selection.attr("width")/2.0);
-		var offsetY = parseFloat(selection.attr("y")) + parseFloat(selection.attr("height")/2.0);
-		selection.style({opacity:'1'})
-			.transition()
-			.duration(500)
-			.style("fill",function(d){
-				var color = d3.rgb($(this).attr("fill"))
-				return color.darker(1);
-			})
-			// .attr({
-			// 	transform:"translate("+offsetX+ ","+offsetY+") "+
-			// 	"scale(2) "+
-			// 	"translate(-"+offsetX+",-"+offsetY+ ")"
-			// });
-		this.parentNode.appendChild(this);
+	var selection = d3.select(this);
+	var offsetX = parseFloat(selection.attr("x")) + parseFloat(selection.attr("width")/2.0);
+	var offsetY = parseFloat(selection.attr("y")) + parseFloat(selection.attr("height")/2.0);
+
+	selection.style({opacity:'1'})
+		.transition()
+		.duration(500)
+		.style("fill",function(d){
+			var color = d3.rgb($(this).attr("fill"))
+			return color.darker(1);
+		});
+
+	this.parentNode.appendChild(this);
 }
 
 function hoverOut(){
@@ -251,9 +277,20 @@ function hoverOut(){
 function removeBars(){
 	counts = {};
 	d3.select("#barGraph").selectAll("div")
-	.remove();
+		.remove();
 	d3.select("#barGraph").selectAll("svg")
-	.remove();
+		.remove();
+	d3.select("#brushText").selectAll("g")
+		.remove();
+	var text = d3.select("#brushText")
+		.append("g")
+		.append("text")
+		.attr("id", "brushNumber")
+	    .text("Number of participants who selected these options: " + 0)
+	    .attr("x", 35)
+	    .attr("y", 12);
+	d3.select("#info").selectAll("rect")
+		.remove();
 }
 
 $(document).ready(function() {
