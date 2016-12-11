@@ -13,6 +13,13 @@ d3.json("./data/original/data.json", function(error, json){
 	$("#loading").hide();
 	loadSelect('#bargraphSelect', attributes);
 	data = json;
+	var brushText = d3.select("#brushText")
+		.append("g");
+	var text = brushText.append("text")
+		.attr("id", "brushNumber")
+	    .text("Number of participants who selected these options: " + 0)
+	    .attr("x", 35)
+	    .attr("y", 12);
 	init();
 });
 
@@ -31,7 +38,6 @@ function makeBarGraph(){
 	var graphHeight = 500;
 	var numAttr = Object.keys(counts).length;
 	var countsValue = putValuesInArray(counts); // everything in counts as an array
-	var adjusted = []; // countsValue but adjusted to the new scale
 	var adjustedHeights = [];
 
 	var arrayMin = Math.ceil(d3.min(countsValue));
@@ -43,16 +49,13 @@ function makeBarGraph(){
 		.nice();
 
 	var yScale = d3.scale.linear()
-		.range([graphHeight - padding, padding])
+		.range([padding, graphHeight - padding])
 		.domain([0, arrayMax])
 		.nice();
 
 	for (var i = 0; i<countsValue.length; i++){
-		adjusted[i] = xScale(countsValue[i]);
-	}
-
-	for (var i = 0; i<countsValue.length; i++){
 		adjustedHeights[i] = yScale(countsValue[i]);
+		console.log(countsValue[i] + " new : " + adjustedHeights[i])
 	}
 
 	//Define X axis
@@ -91,20 +94,18 @@ function makeBarGraph(){
 	var colors = d3.scale.category20();
 
 	barGraph.selectAll("rect")
-		.data(adjusted)
+		.data(adjustedHeights)
 		.enter()
 		.append("svg:rect")
 		.attr("x", function(d,i){
-			return xScale(i)
+			return xScale(i);
 		})
-		.attr("y", function(d,i){
-			return graphHeight - adjustedHeights[i];
+		.attr("y", function(d){
+			return graphHeight - d;
 			// return yScale(i);
 		})
-		.attr("height", function(d, i) {
-			console.log(adjustedHeights[i]);
-			return adjustedHeights[i];
-			// return graphHeight - yScale(d);
+		.attr("height", function(d) {
+			return d;
 		})
 		.attr("width", width/numAttr - padding)
 		.attr("fill", function(d,i){
@@ -144,22 +145,17 @@ function makeBarGraph(){
 	// 	})
 	// }
 	
-	barGraph.selectAll("rect")
-		.on("mouseover", hoverOver)
-		.on("mouseout", hoverOut);
-
 	var brushStart = 0;
 	var brushEnd = sum;
+	var range = width/numAttr;
 
 	var brush = d3.svg.brush()
 		.x(xScale)
 		.on("brush", function() {
 			    b = brush.extent();
-			    var range = width/numAttr;
 
 			    var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range,
 			        localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
-			    console.log(localBrushStart, localBrushEnd)
 
 			    // Snap to rect edge
 			    d3.select("g.brush").call((brush.empty()) ? brush.clear() : 
@@ -167,11 +163,29 @@ function makeBarGraph(){
 
 			    // Fade all years in the histogram not within the brush
 			    d3.selectAll("rect.bar").style("opacity", function(d, i) {
-			    	console.log(d);
 			      return d.x >= localBrushStart && d.x < localBrushEnd || brush.empty() ? "1" : ".4";
 			    });
 			})
-		.on("brushend", brushend);
+		.on("brushend", function(){
+			var localBrushStart = (brush.empty()) ? brushStart : Math.ceil(xScale(b[0])/range)*range;
+		    var localBrushEnd = (brush.empty()) ? brushEnd : Math.ceil(xScale(b[1])/range)*range;
+
+		    d3.selectAll("rect.bar").style("opacity", function(d, i) {
+		      return d.x >= localBrushStart && d.x <= localBrushEnd || brush.empty() ? "1" : ".4";
+		    });
+
+		    var startingIndex = localBrushStart/range;
+		    var endingIndex = localBrushEnd/range;
+		    var selectedSum = 0;
+		    for (var i = startingIndex; i < endingIndex; i++){
+		    	selectedSum += countsValue[i];
+		    }
+		    d3.select("#brushNumber")
+		    	.text(localBrushStart == localBrushEnd ? 
+		    		"Number of participants who selected these options: " + 0 : 
+		    		"Number of participants who selected these options: " + selectedSum);
+
+		});
 
 	var arc = d3.svg.arc()
 		.outerRadius(height / 15)
@@ -187,25 +201,11 @@ function makeBarGraph(){
 		.attr("d", arc);
 	brushing.selectAll("rect")
 		.attr("height", height);
+
+	barGraph.selectAll("rect")
+		.on("mouseover", hoverOver)
+		.on("mouseout", hoverOut);
 }
-
-function brushmove(){
-	yScale.domain(xScale.range()).range(xScale.domain());
-    b = brush.extent();
-
-    var amountStart = (brush.empty()) ? brushStart : Math.ceil(y(b[0])),
-        amountEnd = (brush.empty()) ? brushEnd : Math.ceil(y(b[1]));
-
-    // Snap to rect edge
-    d3.select("g.brush").call((brush.empty()) ? brush.clear() : brush.extent([y.invert(amountStart), y.invert(amountEnd)]));
-
-    // Fade all years in the histogram not within the brush
-    d3.selectAll("rect.bar").style("opacity", function(d, i) {
-      return d.x >= amountStart && d.x < amountEnd || brush.empty() ? "1" : ".4";
-    });
-}
-
-function brushend(){}
 
 function hoverOver(){
 	d3.selectAll('rect')
